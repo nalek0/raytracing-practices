@@ -2,69 +2,65 @@
 #include <string>
 #include <vector>
 
-class Command {
-private:
-    
-    std::string command_name;
+#include "data.hpp"
 
-    std::vector<float> args;
+Command::Command(std::string _name, std::vector<float> _args) : command_name(_name), args(_args) {}
 
-public:
+std::string Command::getCommandName() const
+{
+    return command_name;
+}
 
-    Command(std::string _name, std::vector<float> _args) : command_name(_name), args(_args) {}
+std::vector<float> Command::getArgs() const
+{
+    return args;
+}
 
-    std::string getCommandName() {
-        return command_name;
-    }
+CommandScanner::CommandScanner(std::string _filename) : filename(_filename) {}
 
-    std::vector<float> getArgs() {
-        return args;
-    }
+void CommandScanner::parse(std::vector<Command> &result)
+{
+    std::ifstream file(filename);
+    std::string line;
 
-};
+    while (std::getline(file, line))
+    {
+        std::vector<std::string> words;
+        std::string better_line = line + ' ';
+        std::string current = "";
 
-class CommandScanner {
-private:
-
-    std::string filename;
-    
-public:
-
-    CommandScanner(std::string _filename) : filename(_filename) {}
-
-    void parse(std::vector<Command>& result) {
-        std::ifstream file(filename);
-        std::string line;
-
-        while (std::getline(file, line)) {
-            std::vector<std::string> words;
-            std::string better_line = line + ' ';
-            std::string current = "";
-
-            for (char c : better_line) {
-                if (c != ' ') {
-                    current += c;
-                } else {
-                    if (current != "") {
-                        words.push_back(current);
-                        current = "";
-                    }
+        for (char c : better_line)
+        {
+            if (c != ' ')
+            {
+                current += c;
+            }
+            else
+            {
+                if (current != "")
+                {
+                    words.push_back(current);
+                    current = "";
                 }
             }
+        }
 
-            if (words.size() >= 1) {
-                std::string command_name = words[0];
-                std::vector<float> args = std::vector<float>();
+        if (words.size() >= 1)
+        {
+            std::string command_name = words[0];
+            std::vector<float> args = std::vector<float>();
 
-                for (int i = 1; i < words.size(); i++) {
-                    float arg = std::stof(words[i]);
-                    args.push_back(arg);
-                }
-
-                Command command = Command(command_name, args);
-                result.push_back(command);
+            for (int i = 1; i < words.size(); i++)
+            {
+                float arg = std::stof(words[i]);
+                args.push_back(arg);
             }
+
+            Command command = Command(command_name, args);
+            result.push_back(command);
         }
     }
 
-};
+    Command eof_command = Command("EOF", {});
+    result.push_back(eof_command);
+}
