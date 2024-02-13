@@ -7,17 +7,17 @@ private:
     
     std::string command_name;
 
-    std::vector<std::string> args;
+    std::vector<float> args;
 
 public:
 
-    Command(std::string _name, std::vector<std::string> _args) : command_name(_name), args(_args) {}
+    Command(std::string _name, std::vector<float> _args) : command_name(_name), args(_args) {}
 
     std::string getCommandName() {
         return command_name;
     }
 
-    std::vector<std::string> getArgs() {
+    std::vector<float> getArgs() {
         return args;
     }
 
@@ -53,8 +53,14 @@ public:
             }
 
             if (words.size() >= 1) {
-                std::string command_name = words.at(0);
-                std::vector<std::string> args = std::vector(words.begin() + 1, words.end());
+                std::string command_name = words[0];
+                std::vector<float> args = std::vector<float>();
+
+                for (int i = 1; i < words.size(); i++) {
+                    float arg = std::stof(words[i]);
+                    args.push_back(arg);
+                }
+
                 Command command = Command(command_name, args);
                 result.push_back(command);
             }

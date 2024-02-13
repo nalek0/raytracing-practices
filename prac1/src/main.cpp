@@ -11,7 +11,7 @@ int main() {
     for (Command cmd : result) {
         std::cout << cmd.getCommandName() << " : ";
 
-        for (std::string arg : cmd.getArgs()) {
+        for (float arg : cmd.getArgs()) {
             std::cout << arg << " ";
         }
 
