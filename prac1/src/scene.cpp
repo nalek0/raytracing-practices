@@ -48,9 +48,9 @@ void SceneBuilder::acceptCommand(const Command &command)
     }
     else if (command.getCommandName() == "BG_COLOR")
     {
-        scene.BACKGROUND_COLOR.red = command.getArgs().at(0);
-        scene.BACKGROUND_COLOR.green = command.getArgs().at(1);
-        scene.BACKGROUND_COLOR.blue = command.getArgs().at(2);
+        scene.BACKGROUND_COLOR.red = command.getArgs().at(0) * 255;
+        scene.BACKGROUND_COLOR.green = command.getArgs().at(1) * 255;
+        scene.BACKGROUND_COLOR.blue = command.getArgs().at(2) * 255;
     }
     else if (command.getCommandName() == "CAMERA_POSITION")
     {
@@ -132,9 +132,9 @@ void SceneBuilder::acceptCommand(const Command &command)
         else if (command.getCommandName() == "COLOR")
         {
             current_primitive->color = {
-                (char)command.getArgs().at(0),
-                (char)command.getArgs().at(1),
-                (char)command.getArgs().at(2)};
+                (uint8_t) command.getArgs().at(0),
+                (uint8_t) command.getArgs().at(1),
+                (uint8_t) command.getArgs().at(2)};
         }
         else if (command.getCommandName() == "EOF")
         {

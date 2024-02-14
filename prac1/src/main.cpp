@@ -20,9 +20,9 @@ int main()
     std::cout << "WIDTH = " << scene.WIDTH << "\n";
     std::cout << "HEIGHT = " << scene.HEIGHT << "\n";
     std::cout << "BACKGROUND_COLOR = " 
-        << scene.BACKGROUND_COLOR.red << ", " 
-        << scene.BACKGROUND_COLOR.green << ", " 
-        << scene.BACKGROUND_COLOR.blue << "\n";
+        << (int) scene.BACKGROUND_COLOR.red << ", " 
+        << (int) scene.BACKGROUND_COLOR.green << ", " 
+        << (int) scene.BACKGROUND_COLOR.blue << "\n";
     std::cout << "CAMERA_POSITION = " 
         << scene.CAMERA_POSITION.x << ", " 
         << scene.CAMERA_POSITION.y << ", " 
