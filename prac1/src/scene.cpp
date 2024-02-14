@@ -91,6 +91,8 @@ void SceneBuilder::acceptCommand(const Command &command)
                 scene.primitives.push_back(current_primitive);
                 current_primitive = nullptr;
             }
+
+            is_primitive_building = true;
         }
         else if (command.getCommandName() == "PLANE")
         {
