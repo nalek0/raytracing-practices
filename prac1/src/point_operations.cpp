@@ -52,3 +52,8 @@ float scalar(const Point &left, const Point &right)
 {
     return left.x * right.x + left.y * right.y + left.z * right.z;
 }
+
+Point componentDivision(const Point &left, const Point &right)
+{
+    return Point(left.x / right.x, left.y / right.y, left.z / right.z);
+}
