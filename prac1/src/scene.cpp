@@ -9,7 +9,12 @@ Ellipsoid::Ellipsoid(float _rx, float _ry, float _rz) : rx(_rx), ry(_ry), rz(_rz
 Box::Box(float _sizex, float _sizey, float _sizez) : sizex(_sizex), sizey(_sizey), sizez(_sizez) {}
 
 point_t Plane::intersect(const ray_t ray) {
-    return { 0, 0, 0 }; // TODO
+    point_t ray_position = ray.position;
+    point_t ray_direction = ray.direction;
+    float t = (center_position * normal_direction - ray_position * normal_direction) / (ray_direction * normal_direction);
+    point_t result = ray_position + ray_direction * t;
+
+    return result;
 }
 
 point_t Ellipsoid::intersect(const ray_t ray) {

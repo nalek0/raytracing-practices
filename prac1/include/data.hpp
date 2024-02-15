@@ -22,7 +22,7 @@ struct point
     float y;
     float z;
 
-    point_t operator+(const point_t &right)
+    struct point operator+(const struct point &right)
     {
         return {
             x + right.x,
@@ -30,7 +30,7 @@ struct point
             z + right.z};
     }
 
-    point_t operator-(const point_t &right)
+    struct point operator-(const struct point &right)
     {
         return {
             x - right.x,
@@ -38,23 +38,23 @@ struct point
             z - right.z};
     }
 
-    point_t operator-()
+    struct point operator-()
     {
         return {-x, -y, -z};
     }
 
-    point_t operator*(const float k)
+    struct point operator*(const float k)
     {
         return {k * x, k * y, k * z};
     }
 
     // scalar multiplication
-    float operator*(const point_t &right)
+    float operator*(struct point & right)
     {
         return x * right.x + y * right.y + z * right.z;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const point_t &p)
+    friend std::ostream &operator<<(std::ostream &os, const struct point &p)
     {
         return os << "(" << p.x << ", " << p.y << ", " << p.z << ")";
     }
@@ -99,21 +99,21 @@ public:
 class Primitive
 {
 public:
-    point_t center_position;
+    struct point center_position;
     quternion_t rotation;
     color_t color;
 
-    virtual point_t intersect(const ray_t ray) = 0;
+    virtual struct point intersect(const ray_t ray) = 0;
 };
 
 class Plane : public Primitive
 {
 private:
-    point_t normal_direction;
+    struct point normal_direction;
 
 public:
-    Plane(point_t _normal_direction);
-    point_t intersect(const ray_t ray);
+    Plane(struct point _normal_direction);
+    struct point intersect(const ray_t ray);
 };
 
 class Ellipsoid : public Primitive
@@ -125,7 +125,7 @@ private:
 
 public:
     Ellipsoid(float _rx, float _ry, float _rz);
-    point_t intersect(const ray_t ray);
+    struct point intersect(const ray_t ray);
 };
 
 class Box : public Primitive
@@ -137,7 +137,7 @@ private:
 
 public:
     Box(float _sizex, float _sizey, float _sizez);
-    point_t intersect(const ray_t ray);
+    struct point intersect(const ray_t ray);
 };
 
 class Scene
@@ -146,10 +146,10 @@ public:
     float WIDTH;
     float HEIGHT;
     color_t BACKGROUND_COLOR;
-    point_t CAMERA_POSITION;
-    point_t CAMERA_RIGHT;
-    point_t CAMERA_UP;
-    point_t CAMERA_FORWARD;
+    struct point CAMERA_POSITION;
+    struct point CAMERA_RIGHT;
+    struct point CAMERA_UP;
+    struct point CAMERA_FORWARD;
     float FOV_X;
     float FOV_Y;
     std::vector<Primitive *> primitives;
