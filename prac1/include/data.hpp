@@ -8,6 +8,7 @@ typedef struct color color_t;
 typedef struct point point_t;
 typedef struct ray ray_t;
 typedef struct quternion quternion_t;
+typedef struct intersection_result intersection_result_t;
 
 struct color
 {
@@ -49,7 +50,7 @@ struct point
     }
 
     // scalar multiplication
-    float operator*(struct point & right)
+    float operator*(struct point &right)
     {
         return x * right.x + y * right.y + z * right.z;
     }
@@ -72,6 +73,12 @@ struct quternion
     float y;
     float z;
     float w;
+};
+
+struct intersection_result
+{
+    bool success;
+    struct point result;
 };
 
 class Command
@@ -103,7 +110,7 @@ public:
     quternion_t rotation;
     color_t color;
 
-    virtual struct point intersect(const ray_t ray) = 0;
+    virtual struct intersection_result intersect(const ray_t ray) = 0;
 };
 
 class Plane : public Primitive
@@ -113,7 +120,7 @@ private:
 
 public:
     Plane(struct point _normal_direction);
-    struct point intersect(const ray_t ray);
+    struct intersection_result intersect(const ray_t ray);
 };
 
 class Ellipsoid : public Primitive
@@ -125,7 +132,7 @@ private:
 
 public:
     Ellipsoid(float _rx, float _ry, float _rz);
-    struct point intersect(const ray_t ray);
+    struct intersection_result intersect(const ray_t ray);
 };
 
 class Box : public Primitive
@@ -137,7 +144,7 @@ private:
 
 public:
     Box(float _sizex, float _sizey, float _sizez);
-    struct point intersect(const ray_t ray);
+    struct intersection_result intersect(const ray_t ray);
 };
 
 class Scene
