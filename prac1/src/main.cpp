@@ -6,8 +6,8 @@
 
 ray_t makePixelRay(const Scene &scene, const int x, const int y)
 {
-    float px = (2. * x / scene.WIDTH - 1) * tan(scene.FOV_X / 2);
-    float py = -1 * (2. * y / scene.HEIGHT - 1) * tan(scene.FOV_Y / 2);
+    float px = (2. * (0.5 + x) / scene.WIDTH - 1) * tan(scene.FOV_X / 2);
+    float py = -1 * (2. * (0.5 + y) / scene.HEIGHT - 1) * tan(scene.FOV_Y / 2);
     Point pixel_direction = scene.CAMERA_FORWARD.normalized() + scene.CAMERA_RIGHT.normalized() * px + scene.CAMERA_UP.normalized() * py;
     ray_t pixel_ray = {scene.CAMERA_POSITION, pixel_direction};
 
