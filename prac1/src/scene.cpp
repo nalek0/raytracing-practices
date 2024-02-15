@@ -34,6 +34,10 @@ void SceneBuilder::acceptCommand(const Command &command)
         scene.BACKGROUND_COLOR.green = command.getArgs().at(1);
         scene.BACKGROUND_COLOR.blue = command.getArgs().at(2);
     }
+    else if (command.getCommandName() == "LIGHT_DIR")
+    {
+        // TO BE CONTINUED...
+    }
     else if (command.getCommandName() == "CAMERA_POSITION")
     {
         scene.CAMERA_POSITION.x = command.getArgs().at(0);
