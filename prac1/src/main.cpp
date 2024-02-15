@@ -43,5 +43,11 @@ int main()
     std::cout << "FOV_Y = " << scene.FOV_Y << "\n";
     std::cout << "PRIMITIVES size = " << scene.primitives.size() << std::endl;
 
+    std::cout << "Points test:\n";
+    point_t p = {1, 1, 1};
+    point_t q = {-1, 1, -1};
+
+    std::cout << (p + q) << ' ' << (p * q) << std::endl;
+
     return 0;
 }

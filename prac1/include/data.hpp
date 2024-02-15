@@ -21,6 +21,43 @@ struct point
     float x;
     float y;
     float z;
+
+    point_t operator+(const point_t &right)
+    {
+        return {
+            x + right.x,
+            y + right.y,
+            z + right.z};
+    }
+
+    point_t operator-(const point_t &right)
+    {
+        return {
+            x - right.x,
+            y - right.y,
+            z - right.z};
+    }
+
+    point_t operator-()
+    {
+        return {-x, -y, -z};
+    }
+
+    point_t operator*(const float k)
+    {
+        return {k * x, k * y, k * z};
+    }
+
+    // scalar multiplication
+    float operator*(const point_t &right)
+    {
+        return x * right.x + y * right.y + z * right.z;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const point_t &p)
+    {
+        return os << "(" << p.x << ", " << p.y << ", " << p.z << ")";
+    }
 };
 
 struct ray
@@ -73,6 +110,7 @@ class Plane : public Primitive
 {
 private:
     point_t normal_direction;
+
 public:
     Plane(point_t _normal_direction);
     point_t intersect(const ray_t ray);
@@ -84,6 +122,7 @@ private:
     float rx;
     float ry;
     float rz;
+
 public:
     Ellipsoid(float _rx, float _ry, float _rz);
     point_t intersect(const ray_t ray);
@@ -95,6 +134,7 @@ private:
     float sizex;
     float sizey;
     float sizez;
+
 public:
     Box(float _sizex, float _sizey, float _sizez);
     point_t intersect(const ray_t ray);
@@ -112,7 +152,7 @@ public:
     point_t CAMERA_FORWARD;
     float FOV_X;
     float FOV_Y;
-    std::vector<Primitive*> primitives;
+    std::vector<Primitive *> primitives;
 
     Scene();
     void checkData();
@@ -122,7 +162,7 @@ class SceneBuilder
 {
 private:
     Scene scene;
-    Primitive * current_primitive;
+    Primitive *current_primitive;
     bool is_primitive_building;
 
 public:

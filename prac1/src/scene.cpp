@@ -5,18 +5,16 @@
 #include "data.hpp"
 
 Plane::Plane(point_t _normal_direction) : normal_direction(_normal_direction) {}
+Ellipsoid::Ellipsoid(float _rx, float _ry, float _rz) : rx(_rx), ry(_ry), rz(_rz) {}
+Box::Box(float _sizex, float _sizey, float _sizez) : sizex(_sizex), sizey(_sizey), sizez(_sizez) {}
 
 point_t Plane::intersect(const ray_t ray) {
     return { 0, 0, 0 }; // TODO
 }
 
-Ellipsoid::Ellipsoid(float _rx, float _ry, float _rz) : rx(_rx), ry(_ry), rz(_rz) {}
-
 point_t Ellipsoid::intersect(const ray_t ray) {
     return { 0, 0, 0 }; // TODO
 }
-
-Box::Box(float _sizex, float _sizey, float _sizez) : sizex(_sizex), sizey(_sizey), sizez(_sizez) {}
 
 point_t Box::intersect(const ray_t ray) {
     return { 0, 0, 0 }; // TODO
