@@ -4,28 +4,30 @@
 
 #include "data.hpp"
 
-Plane::Plane(point_t _normal_direction) : normal_direction(_normal_direction) {}
+Plane::Plane(Point _normal_direction) : normal_direction(_normal_direction) {}
 Ellipsoid::Ellipsoid(float _rx, float _ry, float _rz) : rx(_rx), ry(_ry), rz(_rz) {}
 Box::Box(float _sizex, float _sizey, float _sizez) : sizex(_sizex), sizey(_sizey), sizez(_sizez) {}
 
 intersection_result_t Plane::intersect(const ray_t ray)
 {
-    point_t ray_position = ray.position;
-    point_t ray_direction = ray.direction;
-    float t = (center_position * normal_direction - ray_position * normal_direction) / (ray_direction * normal_direction);
-    point_t result = ray_position + ray_direction * t;
+    Point ray_position = ray.position;
+    Point ray_direction = ray.direction;
+    float t = (scalar(center_position, normal_direction) - scalar(ray_position, normal_direction)) 
+        / scalar(ray_direction, normal_direction);
+    Point ttimes = ray_direction * t;
+    Point result = ray_position + ttimes;
 
     return {t > 0, result};
 }
 
 intersection_result_t Ellipsoid::intersect(const ray_t ray)
 {
-    return {false}; // TODO
+    return { false, Point() }; // TODO
 }
 
 intersection_result_t Box::intersect(const ray_t ray)
 {
-    return {false}; // TODO
+    return {false, Point() }; // TODO
 }
 
 Scene::Scene()
@@ -102,7 +104,7 @@ void SceneBuilder::acceptCommand(const Command &command)
         }
         else if (command.getCommandName() == "PLANE")
         {
-            point_t normal_direction = {
+            Point normal_direction = {
                 command.getArgs().at(0),
                 command.getArgs().at(1),
                 command.getArgs().at(2)};

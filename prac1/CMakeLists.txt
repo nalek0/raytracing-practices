@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(SOURCE_FILES
     src/main.cpp 
     src/parce.cpp 
-    src/scene.cpp)
+    src/scene.cpp 
+    src/point_operations.cpp)
 include_directories(include/)
 add_executable(practice1 ${SOURCE_FILES})

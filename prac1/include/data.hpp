@@ -5,7 +5,6 @@
 #include <vector>
 
 typedef struct color color_t;
-typedef struct point point_t;
 typedef struct ray ray_t;
 typedef struct quternion quternion_t;
 typedef struct intersection_result intersection_result_t;
@@ -17,54 +16,31 @@ struct color
     float blue;
 };
 
-struct point
+class Point
 {
+private:
+public:
     float x;
     float y;
     float z;
+    Point(): x(0), y(0), z(0) {}
+    Point(float _x, float _y, float _z): x(_x), y(_y), z(_z) {}
 
-    struct point operator+(const struct point &right)
-    {
-        return {
-            x + right.x,
-            y + right.y,
-            z + right.z};
-    }
+    float length() const;
+    Point normalized() const;
 
-    struct point operator-(const struct point &right)
-    {
-        return {
-            x - right.x,
-            y - right.y,
-            z - right.z};
-    }
-
-    struct point operator-()
-    {
-        return {-x, -y, -z};
-    }
-
-    struct point operator*(const float k)
-    {
-        return {k * x, k * y, k * z};
-    }
-
-    // scalar multiplication
-    float operator*(struct point &right)
-    {
-        return x * right.x + y * right.y + z * right.z;
-    }
-
-    friend std::ostream &operator<<(std::ostream &os, const struct point &p)
-    {
-        return os << "(" << p.x << ", " << p.y << ", " << p.z << ")";
-    }
+    Point operator+(const Point &right);
+    Point operator-(const Point &right);
+    Point operator-();
+    Point operator*(const float k);
+    Point operator/(const float k);
+    friend std::ostream &operator<<(std::ostream &os, const Point &p);
 };
 
 struct ray
 {
-    struct point position;
-    struct point direction;
+    Point position;
+    Point direction;
 };
 
 struct quternion
@@ -78,7 +54,7 @@ struct quternion
 struct intersection_result
 {
     bool success;
-    struct point result;
+    Point result;
 };
 
 class Command
@@ -106,7 +82,7 @@ public:
 class Primitive
 {
 public:
-    struct point center_position;
+    Point center_position;
     quternion_t rotation;
     color_t color;
 
@@ -116,10 +92,10 @@ public:
 class Plane : public Primitive
 {
 private:
-    struct point normal_direction;
+    Point normal_direction;
 
 public:
-    Plane(struct point _normal_direction);
+    Plane(Point _normal_direction);
     struct intersection_result intersect(const ray_t ray);
 };
 
@@ -150,13 +126,13 @@ public:
 class Scene
 {
 public:
-    float WIDTH;
-    float HEIGHT;
+    int WIDTH;
+    int HEIGHT;
     color_t BACKGROUND_COLOR;
-    struct point CAMERA_POSITION;
-    struct point CAMERA_RIGHT;
-    struct point CAMERA_UP;
-    struct point CAMERA_FORWARD;
+    Point CAMERA_POSITION;
+    Point CAMERA_RIGHT;
+    Point CAMERA_UP;
+    Point CAMERA_FORWARD;
     float FOV_X;
     float FOV_Y;
     std::vector<Primitive *> primitives;
@@ -177,3 +153,5 @@ public:
     void acceptCommand(const Command &command);
     Scene getScene();
 };
+
+float scalar(const Point &left, const Point &right);
