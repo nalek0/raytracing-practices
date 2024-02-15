@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 typedef struct color color_t;
 typedef struct point point_t;
@@ -12,9 +11,9 @@ typedef struct quternion quternion_t;
 
 struct color
 {
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
+    float red;
+    float green;
+    float blue;
 };
 
 struct point
