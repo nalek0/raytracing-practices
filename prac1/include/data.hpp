@@ -6,7 +6,7 @@
 
 typedef struct color color_t;
 typedef struct ray ray_t;
-typedef struct quternion quternion_t;
+typedef struct Quaternion quternion_t;
 typedef struct intersection_result intersection_result_t;
 
 struct color
@@ -29,26 +29,31 @@ public:
     float length() const;
     Point normalized() const;
 
-    Point operator+(const Point &right);
-    Point operator-(const Point &right);
-    Point operator-();
-    Point operator*(const float k);
-    Point operator/(const float k);
+    Point operator+(const Point &right) const;
+    Point operator-(const Point &right) const;
+    Point operator-() const;
+    Point operator*(const float k) const;
+    Point operator/(const float k) const;
     friend std::ostream &operator<<(std::ostream &os, const Point &p);
+};
+
+class Quaternion
+{
+public:
+    Point p;
+    float w;
+
+    Quaternion() : p(Point()), w(1) {}
+    Quaternion(Point _p, float _w) : p(_p), w(_w) {}
+
+    Quaternion conjugate() const;
+    Quaternion operator*(const Quaternion &other);
 };
 
 struct ray
 {
     Point position;
     Point direction;
-};
-
-struct quternion
-{
-    float x;
-    float y;
-    float z;
-    float w;
 };
 
 struct intersection_result
@@ -154,5 +159,7 @@ public:
     Scene getScene();
 };
 
-float scalar(const Point &left, const Point &right);
+float scalarMultiplication(const Point &left, const Point &right);
+Point vectorMultiplication(const Point &left, const Point &right);
 Point componentDivision(const Point &left, const Point &right);
+Point rotate(const Point &p, const Quaternion &q);

@@ -9,27 +9,24 @@ Box::Box(float _sizex, float _sizey, float _sizez) : sizex(_sizex), sizey(_sizey
 
 intersection_result_t Plane::intersect(const ray_t ray)
 {
-    Point ray_position = ray.position;
-    Point ray_direction = ray.direction;
-    float t = (scalar(center_position, normal_direction) - scalar(ray_position, normal_direction)) / scalar(ray_direction, normal_direction);
-    Point ttimes = ray_direction * t;
-    Point result = ray_position + ttimes;
+    Point O = rotate(ray.position - center_position, rotation.conjugate());
+    Point D = rotate(ray.direction, rotation.conjugate());
+    Point N = rotate(normal_direction, rotation.conjugate());
+    float t = -scalarMultiplication(O, N) / scalarMultiplication(D, N);
 
-    return {t > 0, result};
+    return {t > 0, rotate(O + D * t, rotation) + center_position};
 }
 
 intersection_result_t Ellipsoid::intersect(const ray_t ray)
 {
-    Point ray_position = ray.position;
-    Point ray_direction = ray.direction;
-    Point O = ray_position - center_position;
-    Point D = ray_direction;
+    Point O = rotate(ray.position - center_position, rotation.conjugate());
+    Point D = rotate(ray.direction, rotation.conjugate());
     Point R = Point(rx, ry, rz);
     Point OdivR = componentDivision(O, R);
     Point DdivR = componentDivision(D, R);
-    float c = scalar(OdivR, OdivR) - 1;
-    float b = 2 * scalar(OdivR, DdivR);
-    float a = scalar(DdivR, DdivR);
+    float c = scalarMultiplication(OdivR, OdivR) - 1;
+    float b = 2 * scalarMultiplication(OdivR, DdivR);
+    float a = scalarMultiplication(DdivR, DdivR);
     // c + bt + a t^2 = 0
     float discriminant = b * b - 4 * a * c;
 
@@ -40,15 +37,11 @@ intersection_result_t Ellipsoid::intersect(const ray_t ray)
 
         if (t2 > 0)
         {
-            Point timed = D * t2;
-
-            return {true, O + timed + center_position};
+            return {true, rotate(O + D * t2, rotation) + center_position};
         }
         else if (t1 > 0)
         {
-            Point timed = D * t1;
-
-            return {true, O + timed + center_position};
+            return {true, rotate(O + D * t1, rotation) + center_position};
         }
         else
         {
@@ -59,16 +52,12 @@ intersection_result_t Ellipsoid::intersect(const ray_t ray)
     {
         return {false, Point()};
     }
-
-    return {false, Point()}; // TODO
 }
 
 intersection_result_t Box::intersect(const ray_t ray)
 {
-    Point ray_position = ray.position;
-    Point ray_direction = ray.direction;
-    Point O = ray_position - center_position;
-    Point D = ray_direction;
+    Point O = rotate(ray.position - center_position, rotation.conjugate());
+    Point D = rotate(ray.direction, rotation.conjugate());
     float t1x = (-sizex - O.x) / D.x;
     float t2x = (sizex - O.x) / D.x;
     float t1y = (-sizey - O.y) / D.y;
@@ -92,14 +81,10 @@ intersection_result_t Box::intersect(const ray_t ray)
     }
     else if (t1 > 0)
     {
-        Point timed = D * t1;
-
-        return {true, O + timed + center_position};
+        return {true, rotate(O + D * t1, rotation) + center_position};
     }
     else
     {
-        Point timed = D * t2;
-
-        return {true, O + timed + center_position};
+        return {true, rotate(O + D * t2, rotation) + center_position};
     }
 }

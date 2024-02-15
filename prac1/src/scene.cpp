@@ -107,11 +107,12 @@ void SceneBuilder::acceptCommand(const Command &command)
         }
         else if (command.getCommandName() == "ROTATION")
         {
-            current_primitive->rotation = {
-                command.getArgs().at(0),
-                command.getArgs().at(1),
-                command.getArgs().at(2),
-                command.getArgs().at(3)};
+            current_primitive->rotation = Quaternion(
+                Point(
+                    command.getArgs().at(0),
+                    command.getArgs().at(1),
+                    command.getArgs().at(2)),
+                command.getArgs().at(3));
         }
         else if (command.getCommandName() == "COLOR")
         {
