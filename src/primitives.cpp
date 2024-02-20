@@ -7,17 +7,26 @@ Plane::Plane(Point _normal_direction) : normal_direction(_normal_direction) {}
 Ellipsoid::Ellipsoid(float _rx, float _ry, float _rz) : rx(_rx), ry(_ry), rz(_rz) {}
 Box::Box(float _sizex, float _sizey, float _sizez) : sizex(_sizex), sizey(_sizey), sizez(_sizez) {}
 
-intersection_result_t Plane::intersect(const ray_t ray)
+intersection_result_t Plane::intersect(const ray_t ray, const float coeff_limit)
 {
     Point O = rotate(ray.position - center_position, rotation.conjugate());
     Point D = rotate(ray.direction, rotation.conjugate());
     Point N = rotate(normal_direction, rotation.conjugate());
     float t = -scalarMultiplication(O, N) / scalarMultiplication(D, N);
 
-    return {t > 0, rotate(O + D * t, rotation) + center_position};
+    if (t > 0 && t < coeff_limit)
+        return {
+            success : t > 0,
+            inside_primitive : false,
+            direction_coeff : t,
+            point : rotate(O + D * t, rotation) + center_position,
+            normale : normal_direction
+        };
+    else
+        return {success : false};
 }
 
-intersection_result_t Ellipsoid::intersect(const ray_t ray)
+intersection_result_t Ellipsoid::intersect(const ray_t ray, const float coeff_limit)
 {
     Point O = rotate(ray.position - center_position, rotation.conjugate());
     Point D = rotate(ray.direction, rotation.conjugate());
@@ -35,26 +44,40 @@ intersection_result_t Ellipsoid::intersect(const ray_t ray)
         float t1 = (-b + sqrt(discriminant)) / (2 * a);
         float t2 = (-b - sqrt(discriminant)) / (2 * a);
 
-        if (t2 > 0)
+        if (t2 > 0 && t2 < coeff_limit)
         {
-            return {true, rotate(O + D * t2, rotation) + center_position};
+            Point non_shifted = rotate(O + D * t2, rotation);
+
+            return {
+                success : true,
+                inside_primitive : false,
+                direction_coeff : t2,
+                point : non_shifted + center_position,
+                normale : componentDivision(componentDivision(non_shifted, R), R)
+            };
         }
-        else if (t1 > 0)
+        else if (t1 > 0 && t1 < coeff_limit)
         {
-            return {true, rotate(O + D * t1, rotation) + center_position};
+            Point non_shifted = rotate(O + D * t1, rotation);
+
+            return {
+                success : true,
+                inside_primitive : true,
+                direction_coeff : t1,
+                point : rotate(O + D * t1, rotation) + center_position,
+                normale : componentDivision(componentDivision(non_shifted, R), R)
+            };
         }
         else
         {
-            return {false, Point()};
+            return {success : false};
         }
     }
     else
-    {
-        return {false, Point()};
-    }
+        return {success : false};
 }
 
-intersection_result_t Box::intersect(const ray_t ray)
+intersection_result_t Box::intersect(const ray_t ray, const float coeff_limit)
 {
     Point O = rotate(ray.position - center_position, rotation.conjugate());
     Point D = rotate(ray.direction, rotation.conjugate());
@@ -77,14 +100,46 @@ intersection_result_t Box::intersect(const ray_t ray)
 
     if (t1 > t2)
     {
-        return {false, Point()};
+        return {success : false};
     }
     else if (t1 > 0)
     {
-        return {true, rotate(O + D * t1, rotation) + center_position};
+        Point non_shifted = rotate(O + D * t1, rotation);
+        Point normale;
+
+        if (abs(abs(non_shifted.x) - sizex) < 1e-6)
+            normale = Point(non_shifted.x, 0, 0);
+        else if (abs(abs(non_shifted.y) - sizey) < 1e-6)
+            normale = Point(0, non_shifted.y, 0);
+        else
+            normale = Point(0, 0, non_shifted.x);
+
+        return {
+            success : true,
+            inside_primitive : false,
+            direction_coeff : t1,
+            point : non_shifted + center_position,
+            normale : normale
+        };
     }
     else
     {
-        return {true, rotate(O + D * t2, rotation) + center_position};
+        Point non_shifted = rotate(O + D * t2, rotation);
+        Point normale;
+
+        if (abs(abs(non_shifted.x) - sizex) < 1e-6)
+            normale = Point(non_shifted.x, 0, 0);
+        else if (abs(abs(non_shifted.y) - sizey) < 1e-6)
+            normale = Point(0, non_shifted.y, 0);
+        else
+            normale = Point(0, 0, non_shifted.x);
+
+        return {
+            success : true,
+            inside_primitive : true,
+            direction_coeff : t2,
+            point : non_shifted + center_position,
+            normale : normale
+        };
     }
 }

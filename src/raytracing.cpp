@@ -13,18 +13,18 @@ ray_t generate_ray(const Scene &scene, const int x, const int y)
     return pixel_ray;
 }
 
-color_t ray_color(const Scene &scene, const ray_t &ray, int depth)
+color_t ray_color(const Scene &scene, const ray_t &ray, float coeff_limit, int depth)
 {
     float ray_length = 1000;
     color_t ray_color = scene.BACKGROUND_COLOR;
     for (int i = 0; i < scene.primitives.size(); i++)
     {
         Primitive *primitive = scene.primitives[i];
-        intersection_result inter = primitive->intersect(ray);
+        intersection_result inter = primitive->intersect(ray, 1000);
 
         if (inter.success)
         {
-            float new_length = (inter.result - scene.CAMERA_POSITION).length();
+            float new_length = (inter.point - scene.CAMERA_POSITION).length();
 
             if (new_length < ray_length)
             {

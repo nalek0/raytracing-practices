@@ -59,7 +59,12 @@ struct ray
 struct intersection_result
 {
     bool success;
-    Point result;
+    
+    // if success:
+    bool inside_primitive;
+    float direction_coeff;
+    Point point;
+    Point normale;
 };
 
 class Command
@@ -99,7 +104,7 @@ public:
     color_t color;
     Material material = Material::DIFFUSER;
 
-    virtual struct intersection_result intersect(const ray_t ray) = 0;
+    virtual struct intersection_result intersect(const ray_t ray, const float coeff_limit) = 0;
 };
 
 class Plane : public Primitive
@@ -109,7 +114,7 @@ private:
 
 public:
     Plane(Point _normal_direction);
-    struct intersection_result intersect(const ray_t ray);
+    struct intersection_result intersect(const ray_t ray, const float coeff_limit);
 };
 
 class Ellipsoid : public Primitive
@@ -121,7 +126,7 @@ private:
 
 public:
     Ellipsoid(float _rx, float _ry, float _rz);
-    struct intersection_result intersect(const ray_t ray);
+    struct intersection_result intersect(const ray_t ray, const float coeff_limit);
 };
 
 class Box : public Primitive
@@ -133,7 +138,7 @@ private:
 
 public:
     Box(float _sizex, float _sizey, float _sizez);
-    struct intersection_result intersect(const ray_t ray);
+    struct intersection_result intersect(const ray_t ray, const float coeff_limit);
 };
 
 class PointLight
