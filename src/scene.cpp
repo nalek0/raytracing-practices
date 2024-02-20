@@ -264,12 +264,25 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
 
     for (DirectionLight light : scene.directioned_lights)
     {
-        Point N = light.direction.normalized();
-        Point L = collision.intersection.normale.normalized();
-        float cos_angle = scalarMultiplication(N, L);
+        Point intersection = collision.intersection.point;
+        Point direction = light.direction;
+        Ray ray = {
+            .position = intersection + direction * 1e-4,
+            .direction = direction};
 
-        if (cos_angle > 0)
-            result_intensivity += light.intensity * cos_angle;
+        RayCollision shadow_collision = first_intersection(scene, ray, 1);
+
+        if (shadow_collision.intersection.success)
+            continue; // In the shadow
+        else
+        {
+            Point N = light.direction.normalized();
+            Point L = collision.intersection.normale.normalized();
+            float cos_angle = scalarMultiplication(N, L);
+
+            if (cos_angle > 0)
+                result_intensivity += light.intensity * cos_angle;
+        }
     }
 
     for (PointLight light : scene.pointed_lights)
@@ -282,8 +295,6 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
 
         RayCollision shadow_collision = first_intersection(scene, ray, 1);
 
-        // std::cout << "Light: " << shadow_collision.intersection.success << std::endl;
-
         if (shadow_collision.intersection.success)
             continue; // In the shadow
         else
@@ -292,8 +303,6 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
             Point N = collision.intersection.normale.normalized();
             Color apllied_attenuation = apply_attenuation(light, intersection);
             float cos_angle = scalarMultiplication(L, N);
-
-            // std::cout << L << ", " << N << ", cos_angle=" << cos_angle << std::endl;
 
             if (cos_angle > 0)
                 result_intensivity += light.intensity * cos_angle;
