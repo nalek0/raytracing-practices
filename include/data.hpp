@@ -84,12 +84,20 @@ public:
     void parse(std::vector<Command> &result);
 };
 
+enum Material
+{
+    METALLIC,
+    DIELECTRIC,
+    DIFFUSER
+};
+
 class Primitive
 {
 public:
     Point center_position;
     quternion_t rotation;
     color_t color;
+    Material material = Material::DIFFUSER;
 
     virtual struct intersection_result intersect(const ray_t ray) = 0;
 };

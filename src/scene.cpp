@@ -184,6 +184,14 @@ void SceneBuilder::acceptCommand(const Command &command)
             std::stof(command.getArgs().at(1)),
             std::stof(command.getArgs().at(2))};
     }
+    else if (command.getCommandName() == "METALLIC")
+    {
+        current_primitive->material = Material::METALLIC;
+    }
+    else if (command.getCommandName() == "DIELECTRIC")
+    {
+        current_primitive->material = Material::DIELECTRIC;
+    }
     else if (command.getCommandName() == "EOF")
     {
         if (is_primitive_building)
