@@ -15,6 +15,10 @@ struct color
     float red;
     float green;
     float blue;
+
+    color_t operator*(const float k) const;
+    color_t operator/(const float k) const;
+    color_t operator+(const color_t &other) const;
 };
 
 class Point
@@ -148,19 +152,19 @@ class PointLight
 {
 public:
     color_t intensity;
-    Point direction;
+    Point position;
     color_t attenuation;
 
-    PointLight(color_t _intensity, Point _direction, color_t _attenuation) : intensity(_intensity), direction(_direction), attenuation(_attenuation) {}
+    PointLight(color_t _intensity, Point _position, color_t _attenuation) : intensity(_intensity), position(_position), attenuation(_attenuation) {}
 };
 
 class DirectionLight
 {
 public:
     color_t intensity;
-    Point position;
+    Point direction;
 
-    DirectionLight(color_t _intensity, Point _position) : intensity(_intensity), position(_position) {}
+    DirectionLight(color_t _intensity, Point _direction) : intensity(_intensity), direction(_direction) {}
 };
 
 class Scene
