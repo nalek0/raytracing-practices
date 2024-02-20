@@ -32,11 +32,11 @@ void generate_image(const Scene &scene, const std::string &output_file)
         for (int x = 0; x < scene.WIDTH; x++)
         {
             ray_t pixel_ray = generate_ray(scene, x, y);
-            color_t ray_color = get_ray_color(scene, pixel_ray);
+            color_t color = ray_color(scene, pixel_ray);
 
-            char byte1 = ((char)round(ray_color.red * 255));
-            char byte2 = ((char)round(ray_color.green * 255));
-            char byte3 = ((char)round(ray_color.blue * 255));
+            char byte1 = ((char)round(color.red * 255));
+            char byte2 = ((char)round(color.green * 255));
+            char byte3 = ((char)round(color.blue * 255));
             file.write(&byte1, sizeof(char));
             file.write(&byte2, sizeof(char));
             file.write(&byte3, sizeof(char));

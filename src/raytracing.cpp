@@ -13,7 +13,7 @@ ray_t generate_ray(const Scene &scene, const int x, const int y)
     return pixel_ray;
 }
 
-color_t get_ray_color(const Scene &scene, const ray_t &ray)
+color_t ray_color(const Scene &scene, const ray_t &ray, int depth)
 {
     float ray_length = 1000;
     color_t ray_color = scene.BACKGROUND_COLOR;
