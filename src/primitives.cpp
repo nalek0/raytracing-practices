@@ -1,13 +1,14 @@
 #include <iostream>
 #include <cmath>
 
-#include "data.hpp"
+#include "scene.hpp"
+#include "raytracing.hpp"
 
 Plane::Plane(Point _normal_direction) : normal_direction(_normal_direction) {}
 Ellipsoid::Ellipsoid(float _rx, float _ry, float _rz) : rx(_rx), ry(_ry), rz(_rz) {}
 Box::Box(float _sizex, float _sizey, float _sizez) : sizex(_sizex), sizey(_sizey), sizez(_sizez) {}
 
-intersection_result_t Plane::intersect(const ray_t ray, const float coeff_limit)
+IntersectionResult Plane::intersect(const Ray ray, const float coeff_limit)
 {
     Point O = rotate(ray.position - center_position, rotation.conjugate());
     Point D = rotate(ray.direction, rotation.conjugate());
@@ -25,7 +26,7 @@ intersection_result_t Plane::intersect(const ray_t ray, const float coeff_limit)
         return {.success = false};
 }
 
-intersection_result_t Ellipsoid::intersect(const ray_t ray, const float coeff_limit)
+IntersectionResult Ellipsoid::intersect(const Ray ray, const float coeff_limit)
 {
     Point O = rotate(ray.position - center_position, rotation.conjugate());
     Point D = rotate(ray.direction, rotation.conjugate());
@@ -84,7 +85,7 @@ Point Box::getNormale(Point point) const
         return Point(0, 0, point.x);
 }
 
-intersection_result_t Box::intersect(const ray_t ray, const float coeff_limit)
+IntersectionResult Box::intersect(const Ray ray, const float coeff_limit)
 {
     Point O = rotate(ray.position - center_position, rotation.conjugate());
     Point D = rotate(ray.direction, rotation.conjugate());

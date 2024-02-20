@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "data.hpp"
+#include "parse.hpp"
 
 Command::Command(std::string _name, std::vector<std::string> _args) : command_name(_name), args(_args) {}
 

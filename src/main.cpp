@@ -3,7 +3,6 @@
 #include <cmath>
 
 #include "raytracing.hpp"
-#include "data.hpp"
 
 Scene parse_scene(const std::string &input_file)
 {
@@ -31,7 +30,7 @@ void generate_image(const Scene &scene, const std::string &output_file)
     {
         for (int x = 0; x < scene.WIDTH; x++)
         {
-            ray_t pixel_ray = generate_ray(scene, x, y);
+            Ray pixel_ray = generate_ray(scene, x, y);
             color_t color = ray_color(scene, pixel_ray);
 
             char byte1 = ((char)round(color.red * 255));

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cassert>
 
-#include "data.hpp"
+#include "scene.hpp"
 
 Scene::Scene()
 {

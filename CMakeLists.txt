@@ -7,6 +7,7 @@ set(SOURCE_FILES
     src/scene.cpp 
     src/primitives.cpp 
     src/raytracing.cpp
-    src/point_operations.cpp)
+    src/geometry.cpp
+    src/color.cpp)
 include_directories(include/)
 add_executable(practice1 ${SOURCE_FILES})

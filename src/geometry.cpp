@@ -1,21 +1,6 @@
-#include "data.hpp"
+#include "geometry.hpp"
 
 #include <cmath>
-
-color_t color_t::operator*(const float k) const
-{
-    return {red * k, green * k, blue * k};
-}
-
-color_t color_t::operator/(const float k) const
-{
-    return {red / k, green / k, blue / k};
-}
-
-color_t color_t::operator+(const color_t &other) const
-{
-    return {red + other.red, green + other.green, blue + other.blue};
-}
 
 Point Point::operator+(const Point &right) const
 {
