@@ -128,6 +128,26 @@ public:
     struct intersection_result intersect(const ray_t ray);
 };
 
+class PointLight
+{
+public:
+    color_t intensity;
+    Point direction;
+    color_t attenuation;
+
+    PointLight(color_t _intensity, Point _direction, color_t _attenuation) : intensity(_intensity), direction(_direction), attenuation(_attenuation) {}
+};
+
+class DirectionLight
+{
+public:
+    color_t intensity;
+    Point position;
+    color_t attenuation;
+
+    DirectionLight(color_t _intensity, Point _position, color_t _attenuation) : intensity(_intensity), position(_position), attenuation(_attenuation) {}
+};
+
 class Scene
 {
 public:
@@ -140,6 +160,10 @@ public:
     Point CAMERA_FORWARD;
     float FOV_X;
     float FOV_Y;
+    int RAY_DEPTH;
+    color_t AMBIENT_LIGHT;
+    std::vector<PointLight> pointed_lights;
+    std::vector<DirectionLight> directioned_lights;
     std::vector<Primitive *> primitives;
 
     Scene();
@@ -152,6 +176,15 @@ private:
     Scene scene;
     Primitive *current_primitive;
     bool is_primitive_building;
+
+    // Light building params:
+    bool light_building;
+    bool light_pointed;
+    bool light_directioned;
+    color_t intensity;
+    Point direction;
+    Point position;
+    color_t attenuation;
 
 public:
     SceneBuilder();

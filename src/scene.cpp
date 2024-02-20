@@ -1,12 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <cassert>
 
 #include "data.hpp"
 
 Scene::Scene()
 {
     this->primitives = std::vector<Primitive *>();
+    this->directioned_lights = std::vector<DirectionLight>();
+    this->pointed_lights = std::vector<PointLight>();
 }
 
 void Scene::checkData()
@@ -19,6 +22,9 @@ SceneBuilder::SceneBuilder()
     this->scene = Scene();
     this->current_primitive = nullptr;
     this->is_primitive_building = false;
+    this->light_building = false;
+    this->light_pointed = false;
+    this->light_directioned = false;
 }
 
 void SceneBuilder::acceptCommand(const Command &command)
@@ -33,10 +39,6 @@ void SceneBuilder::acceptCommand(const Command &command)
         scene.BACKGROUND_COLOR.red = std::stof(command.getArgs().at(0));
         scene.BACKGROUND_COLOR.green = std::stof(command.getArgs().at(1));
         scene.BACKGROUND_COLOR.blue = std::stof(command.getArgs().at(2));
-    }
-    else if (command.getCommandName() == "LIGHT_DIR")
-    {
-        // TO BE CONTINUED...
     }
     else if (command.getCommandName() == "CAMERA_POSITION")
     {
@@ -66,6 +68,66 @@ void SceneBuilder::acceptCommand(const Command &command)
     {
         scene.FOV_X = std::stof(command.getArgs().at(0));
     }
+    else if (command.getCommandName() == "RAY_DEPTH")
+    {
+        scene.RAY_DEPTH = std::stoi(command.getArgs().at(0));
+    }
+    else if (command.getCommandName() == "AMBIENT_LIGHT")
+    {
+        scene.AMBIENT_LIGHT = {
+            std::stof(command.getArgs().at(0)),
+            std::stof(command.getArgs().at(1)),
+            std::stof(command.getArgs().at(2))};
+    }
+    else if (command.getCommandName() == "NEW_LIGHT")
+    {
+        if (light_building && light_pointed)
+            scene.pointed_lights.push_back(PointLight(intensity, position, attenuation));
+        else if (light_building && light_directioned)
+            scene.directioned_lights.push_back(DirectionLight(intensity, direction, attenuation));
+
+        this->light_building = true;
+        this->light_pointed = false;
+        this->light_directioned = false;
+    }
+    else if (command.getCommandName() == "LIGHT_INTENSITY")
+    {
+        assert(light_building);
+
+        this->intensity = {
+            std::stof(command.getArgs().at(0)),
+            std::stof(command.getArgs().at(1)),
+            std::stof(command.getArgs().at(2))};
+    }
+    else if (command.getCommandName() == "LIGHT_ATTENUATION")
+    {
+        assert(light_building);
+
+        this->attenuation = {
+            std::stof(command.getArgs().at(0)),
+            std::stof(command.getArgs().at(1)),
+            std::stof(command.getArgs().at(2))};
+    }
+    else if (command.getCommandName() == "LIGHT_DIRECTION")
+    {
+        assert(light_building && !light_pointed);
+
+        this->light_directioned = true;
+        this->direction = {
+            std::stof(command.getArgs().at(0)),
+            std::stof(command.getArgs().at(1)),
+            std::stof(command.getArgs().at(2))};
+    }
+    else if (command.getCommandName() == "LIGHT_POSITION")
+    {
+        assert(light_building && !light_directioned);
+
+        this->light_pointed = true;
+        this->position = {
+            std::stof(command.getArgs().at(0)),
+            std::stof(command.getArgs().at(1)),
+            std::stof(command.getArgs().at(2))};
+    }
     else if (command.getCommandName() == "NEW_PRIMITIVE")
     {
         if (is_primitive_building)
@@ -92,7 +154,7 @@ void SceneBuilder::acceptCommand(const Command &command)
             std::stof(command.getArgs().at(2)));
     }
     else if (command.getCommandName() == "BOX")
-    {   
+    {
         current_primitive = new Box(
             std::stof(command.getArgs().at(0)),
             std::stof(command.getArgs().at(1)),
@@ -124,17 +186,17 @@ void SceneBuilder::acceptCommand(const Command &command)
     else if (command.getCommandName() == "EOF")
     {
         if (is_primitive_building)
-        {
             scene.primitives.push_back(current_primitive);
-            is_primitive_building = false;
-        }
+        if (light_building && light_pointed)
+            scene.pointed_lights.emplace_back(intensity, position, attenuation);
+        if (light_building && light_directioned)
+            scene.directioned_lights.emplace_back(intensity, direction, attenuation);
 
         scene.checkData();
     }
     else
     {
         std::cerr << "WARNING: command " << command.getCommandName() << " not found" << std::endl;
-        std::exit(1);
     }
 }
 
