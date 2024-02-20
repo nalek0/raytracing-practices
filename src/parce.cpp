@@ -4,14 +4,14 @@
 
 #include "data.hpp"
 
-Command::Command(std::string _name, std::vector<float> _args) : command_name(_name), args(_args) {}
+Command::Command(std::string _name, std::vector<std::string> _args) : command_name(_name), args(_args) {}
 
 std::string Command::getCommandName() const
 {
     return command_name;
 }
 
-std::vector<float> Command::getArgs() const
+std::vector<std::string> Command::getArgs() const
 {
     return args;
 }
@@ -48,12 +48,11 @@ void CommandScanner::parse(std::vector<Command> &result)
         if (words.size() >= 1)
         {
             std::string command_name = words[0];
-            std::vector<float> args = std::vector<float>();
+            std::vector<std::string> args = std::vector<std::string>();
 
             for (int i = 1; i < words.size(); i++)
             {
-                float arg = std::stof(words[i]);
-                args.push_back(arg);
+                args.push_back(std::string(words[i]));
             }
 
             Command command = Command(command_name, args);

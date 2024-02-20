@@ -66,12 +66,12 @@ class Command
 {
 private:
     std::string command_name;
-    std::vector<float> args;
+    std::vector<std::string> args;
 
 public:
-    Command(std::string _name, std::vector<float> _args);
+    Command(std::string _name, std::vector<std::string> _args);
     std::string getCommandName() const;
-    std::vector<float> getArgs() const;
+    std::vector<std::string> getArgs() const;
 };
 
 class CommandScanner
