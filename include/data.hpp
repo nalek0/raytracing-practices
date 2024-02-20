@@ -138,7 +138,9 @@ private:
 
 public:
     Box(float _sizex, float _sizey, float _sizez);
+    
     struct intersection_result intersect(const ray_t ray, const float coeff_limit);
+    Point getNormale(Point point) const;
 };
 
 class PointLight
