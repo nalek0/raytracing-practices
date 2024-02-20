@@ -109,7 +109,7 @@ intersection_result_t Box::intersect(const ray_t ray, const float coeff_limit)
     {
         return {.success = false};
     }
-    else if (t1 > 0)
+    else if (t1 > 0 && t1 < coeff_limit)
     {
         Point non_shifted = rotate(O + D * t1, rotation);
 
@@ -120,7 +120,7 @@ intersection_result_t Box::intersect(const ray_t ray, const float coeff_limit)
             .point = non_shifted + center_position,
             .normale = getNormale(non_shifted)};
     }
-    else
+    else if (t2 > 0 && t2 < coeff_limit)
     {
         Point non_shifted = rotate(O + D * t2, rotation);
 
@@ -130,5 +130,9 @@ intersection_result_t Box::intersect(const ray_t ray, const float coeff_limit)
             .direction_coeff = t2,
             .point = non_shifted + center_position,
             .normale = getNormale(non_shifted)};
+    }
+    else
+    {
+        return {.success = false};
     }
 }

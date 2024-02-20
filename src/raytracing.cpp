@@ -1,3 +1,4 @@
+#include <iostream>
 #include <cmath>
 
 #include "data.hpp"
@@ -13,26 +14,35 @@ ray_t generate_ray(const Scene &scene, const int x, const int y)
     return pixel_ray;
 }
 
-color_t ray_color(const Scene &scene, const ray_t &ray, float coeff_limit, int depth)
+ray_collision_t first_intersection(const Scene &scene, const ray_t &ray, float coeff_limit)
 {
-    float ray_length = 1000;
-    color_t ray_color = scene.BACKGROUND_COLOR;
-    for (int i = 0; i < scene.primitives.size(); i++)
+    float ray_coeff = coeff_limit;
+    Primitive *result_primitive = nullptr;
+    intersection_result_t result_intersection = {.success = false};
+
+    for (Primitive *primitive : scene.primitives)
     {
-        Primitive *primitive = scene.primitives[i];
-        intersection_result inter = primitive->intersect(ray, 1000);
+        intersection_result inter = primitive->intersect(ray, ray_coeff);
 
         if (inter.success)
         {
-            float new_length = (inter.point - scene.CAMERA_POSITION).length();
-
-            if (new_length < ray_length)
-            {
-                ray_length = new_length;
-                ray_color = primitive->color;
-            }
+            result_primitive = primitive;
+            result_intersection = inter;
+            ray_coeff = inter.direction_coeff;
         }
     }
 
-    return ray_color;
+    return {
+        .primitive = result_primitive,
+        .intersection = result_intersection};
+}
+
+color_t ray_color(const Scene &scene, const ray_t &ray, float coeff_limit, int depth)
+{
+    ray_collision collision = first_intersection(scene, ray, coeff_limit);
+
+    if (collision.intersection.success)
+        return collision.primitive->color;
+    else
+        return scene.BACKGROUND_COLOR;
 }

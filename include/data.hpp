@@ -8,6 +8,7 @@ typedef struct color color_t;
 typedef struct ray ray_t;
 typedef struct Quaternion quternion_t;
 typedef struct intersection_result intersection_result_t;
+typedef struct ray_collision ray_collision_t;
 
 struct color
 {
@@ -59,7 +60,7 @@ struct ray
 struct intersection_result
 {
     bool success;
-    
+
     // if success:
     bool inside_primitive;
     float direction_coeff;
@@ -138,7 +139,7 @@ private:
 
 public:
     Box(float _sizex, float _sizey, float _sizez);
-    
+
     struct intersection_result intersect(const ray_t ray, const float coeff_limit);
     Point getNormale(Point point) const;
 };
@@ -204,6 +205,12 @@ public:
     SceneBuilder();
     void acceptCommand(const Command &command);
     Scene getScene();
+};
+
+struct ray_collision
+{
+    Primitive *primitive;
+    intersection_result_t intersection;
 };
 
 float scalarMultiplication(const Point &left, const Point &right);

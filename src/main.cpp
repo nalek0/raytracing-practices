@@ -51,9 +51,5 @@ int main(int argc, char **argv)
     Scene scene = parse_scene(input_file);
     generate_image(scene, output_file);
     
-    for (Primitive * primitive : scene.primitives) {
-        delete primitive;
-    }
-
     return 0;
 }
