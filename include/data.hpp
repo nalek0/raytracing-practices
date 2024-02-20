@@ -143,9 +143,8 @@ class DirectionLight
 public:
     color_t intensity;
     Point position;
-    color_t attenuation;
 
-    DirectionLight(color_t _intensity, Point _position, color_t _attenuation) : intensity(_intensity), position(_position), attenuation(_attenuation) {}
+    DirectionLight(color_t _intensity, Point _position) : intensity(_intensity), position(_position) {}
 };
 
 class Scene

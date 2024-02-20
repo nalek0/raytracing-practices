@@ -84,7 +84,7 @@ void SceneBuilder::acceptCommand(const Command &command)
         if (light_building && light_pointed)
             scene.pointed_lights.push_back(PointLight(intensity, position, attenuation));
         else if (light_building && light_directioned)
-            scene.directioned_lights.push_back(DirectionLight(intensity, direction, attenuation));
+            scene.directioned_lights.push_back(DirectionLight(intensity, direction));
 
         this->light_building = true;
         this->light_pointed = false;
@@ -101,8 +101,9 @@ void SceneBuilder::acceptCommand(const Command &command)
     }
     else if (command.getCommandName() == "LIGHT_ATTENUATION")
     {
-        assert(light_building);
+        assert(light_building && !light_directioned);
 
+        this->light_pointed = true;
         this->attenuation = {
             std::stof(command.getArgs().at(0)),
             std::stof(command.getArgs().at(1)),
@@ -188,9 +189,9 @@ void SceneBuilder::acceptCommand(const Command &command)
         if (is_primitive_building)
             scene.primitives.push_back(current_primitive);
         if (light_building && light_pointed)
-            scene.pointed_lights.emplace_back(intensity, position, attenuation);
-        if (light_building && light_directioned)
-            scene.directioned_lights.emplace_back(intensity, direction, attenuation);
+            scene.pointed_lights.push_back(PointLight(intensity, position, attenuation));
+        else if (light_building && light_directioned)
+            scene.directioned_lights.push_back(DirectionLight(intensity, direction));
 
         scene.checkData();
     }
