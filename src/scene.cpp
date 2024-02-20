@@ -213,3 +213,105 @@ Scene SceneBuilder::getScene()
 {
     return scene;
 }
+
+Ray generate_ray(const Scene &scene, const int x, const int y)
+{
+    float px = (2. * (0.5 + x) / scene.WIDTH - 1) * tan(scene.FOV_X / 2);
+    float py = -1 * (2. * (0.5 + y) / scene.HEIGHT - 1) * tan(scene.FOV_Y / 2);
+    Point pixel_direction = scene.CAMERA_FORWARD.normalized() + scene.CAMERA_RIGHT.normalized() * px + scene.CAMERA_UP.normalized() * py;
+    Ray pixel_ray = {scene.CAMERA_POSITION, pixel_direction};
+
+    return pixel_ray;
+}
+
+RayCollision first_intersection(const Scene &scene, const Ray &ray, float coeff_limit)
+{
+    float ray_coeff = coeff_limit;
+    Primitive *result_primitive = nullptr;
+    IntersectionResult result_intersection = {.success = false};
+
+    for (Primitive *primitive : scene.primitives)
+    {
+        IntersectionResult result = primitive->intersect(ray, ray_coeff);
+
+        if (result.success)
+        {
+            result_primitive = primitive;
+            result_intersection = result;
+            ray_coeff = result.direction_coeff;
+        }
+    }
+
+    return {
+        .primitive = result_primitive,
+        .intersection = result_intersection};
+}
+
+Intensity apply_attenuation(const PointLight &light, const Point &point)
+{
+    Color I = light.intensity;
+    Point D = light.position - point;
+    float R = D.length();
+    float U = light.attenuation.red + light.attenuation.green * R + light.attenuation.blue * R * R;
+
+    return I / U;
+}
+
+Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &collision)
+{
+    Color result_intensivity = {0, 0, 0};
+    result_intensivity += scene.AMBIENT_LIGHT;
+
+    for (DirectionLight light : scene.directioned_lights)
+    {
+        Point N = light.direction.normalized();
+        Point L = collision.intersection.normale.normalized();
+        float cos_angle = scalarMultiplication(N, L);
+
+        if (cos_angle > 0)
+            result_intensivity += light.intensity * cos_angle;
+    }
+
+    for (PointLight light : scene.pointed_lights)
+    {
+        Point intersection = collision.intersection.point;
+        Point L = (light.position - intersection).normalized();
+        Point N = collision.intersection.normale.normalized();
+        Color apllied_attenuation = apply_attenuation(light, intersection);
+        float cos_angle = scalarMultiplication(L, N);
+
+        if (cos_angle > 0)
+            result_intensivity += light.intensity * cos_angle;
+    }
+
+    float red = collision.primitive->color.red * result_intensivity.red;
+    float green = collision.primitive->color.green * result_intensivity.green;
+    float blue = collision.primitive->color.blue * result_intensivity.blue;
+
+    return {std::min(red, 1.f), std::min(green, 1.f), std::min(blue, 1.f)};
+}
+
+Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit, int depth)
+{
+    RayCollision collision = first_intersection(scene, ray, coeff_limit);
+
+    if (collision.intersection.success)
+    {
+        switch (collision.primitive->material)
+        {
+        case Material::METALLIC:
+        case Material::DIELECTRIC:
+        case Material::DIFFUSER:
+            return diffuser_color(scene, ray, collision);
+
+            break;
+        default:
+            std::cerr << "Unexpected material type " << collision.primitive->material;
+
+            break;
+        }
+        return collision.primitive->color;
+    }
+    else
+        return scene.BACKGROUND_COLOR;
+}

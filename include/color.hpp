@@ -1,6 +1,8 @@
 #pragma once
 
-typedef struct color color_t;
+typedef struct color Color;
+typedef struct color Intensity;
+typedef struct color Attenuation;
 
 struct color
 {
@@ -8,7 +10,8 @@ struct color
     float green;
     float blue;
 
-    color_t operator*(const float k) const;
-    color_t operator/(const float k) const;
-    color_t operator+(const color_t &other) const;
+    Color operator*(const float k) const;
+    Color operator/(const float k) const;
+    Color operator+(const Color &other) const;
+    Color& operator+=(const Color &other);
 };

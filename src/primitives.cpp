@@ -2,7 +2,6 @@
 #include <cmath>
 
 #include "scene.hpp"
-#include "raytracing.hpp"
 
 Plane::Plane(Point _normal_direction) : normal_direction(_normal_direction) {}
 Ellipsoid::Ellipsoid(float _rx, float _ry, float _rz) : rx(_rx), ry(_ry), rz(_rz) {}
