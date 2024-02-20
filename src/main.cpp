@@ -49,9 +49,9 @@ int main(int argc, char **argv)
     std::string output_file = std::string(argv[2]);
     Scene scene = parse_scene(input_file);
     
-    // ray_t ray = generate_ray(scene, scene.WIDTH / 2, scene.HEIGHT / 2);
-    // ray_collision collision = first_intersection(scene, ray, 1000);
-    // color_t result = diffuser_color(scene, ray, collision);
+    // Ray ray = generate_ray(scene, scene.WIDTH / 2, scene.HEIGHT / 2 + 1000);
+    // RayCollision collision = first_intersection(scene, ray, 1000);
+    // Color result = diffuser_color(scene, ray, collision);
     // std::cout << result.red << ' ' << result.green << ' ' << result.blue << std::endl;
     generate_image(scene, output_file);
     

@@ -280,9 +280,11 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
             .position = intersection + direction * 1e-4,
             .direction = direction};
 
-        RayCollision collision = first_intersection(scene, ray, 1);
+        RayCollision shadow_collision = first_intersection(scene, ray, 1);
 
-        if (collision.intersection.success)
+        // std::cout << "Light: " << shadow_collision.intersection.success << std::endl;
+
+        if (shadow_collision.intersection.success)
             continue; // In the shadow
         else
         {
@@ -290,6 +292,8 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
             Point N = collision.intersection.normale.normalized();
             Color apllied_attenuation = apply_attenuation(light, intersection);
             float cos_angle = scalarMultiplication(L, N);
+
+            // std::cout << L << ", " << N << ", cos_angle=" << cos_angle << std::endl;
 
             if (cos_angle > 0)
                 result_intensivity += light.intensity * cos_angle;
