@@ -20,7 +20,7 @@ IntersectionResult Plane::intersect(const Ray ray, const float coeff_limit)
             .inside_primitive = false,
             .direction_coeff = t,
             .point = rotate(O + D * t, rotation) + center_position,
-            .normale = normal_direction};
+            .normale = rotate(normal_direction, rotation)};
     else
         return {.success = false};
 }
@@ -45,25 +45,27 @@ IntersectionResult Ellipsoid::intersect(const Ray ray, const float coeff_limit)
 
         if (t2 > 0 && t2 < coeff_limit)
         {
-            Point non_shifted = rotate(O + D * t2, rotation);
+            Point before_rotation_point = O + D * t2;
+            Point before_rotation_normale = componentDivision(componentDivision(before_rotation_point, R), R);
 
             return {
                 .success = true,
                 .inside_primitive = false,
                 .direction_coeff = t2,
-                .point = non_shifted + center_position,
-                .normale = componentDivision(componentDivision(non_shifted, R), R)};
+                .point = rotate(before_rotation_point, rotation) + center_position,
+                .normale = rotate(before_rotation_normale, rotation)};
         }
         else if (t1 > 0 && t1 < coeff_limit)
         {
-            Point non_shifted = rotate(O + D * t1, rotation);
+            Point before_rotation_point = O + D * t1;
+            Point before_rotation_normale = componentDivision(componentDivision(before_rotation_point, R), R);
 
             return {
                 .success = true,
                 .inside_primitive = true,
                 .direction_coeff = t1,
-                .point = rotate(O + D * t1, rotation) + center_position,
-                .normale = componentDivision(componentDivision(non_shifted, R), R)};
+                .point = rotate(before_rotation_point, rotation) + center_position,
+                .normale = rotate(before_rotation_normale, rotation)};
         }
         else
         {
@@ -111,25 +113,27 @@ IntersectionResult Box::intersect(const Ray ray, const float coeff_limit)
     }
     else if (t1 > 0 && t1 < coeff_limit)
     {
-        Point non_shifted = rotate(O + D * t1, rotation);
+        Point before_rotation_point = O + D * t1;
+        Point before_rotation_normale = getNormale(before_rotation_point);
 
         return {
             .success = true,
             .inside_primitive = false,
             .direction_coeff = t1,
-            .point = non_shifted + center_position,
-            .normale = getNormale(non_shifted)};
+            .point = rotate(before_rotation_point, rotation) + center_position,
+            .normale = rotate(before_rotation_normale, rotation)};
     }
     else if (t2 > 0 && t2 < coeff_limit)
     {
-        Point non_shifted = rotate(O + D * t2, rotation);
+        Point before_rotation_point = O + D * t2;
+        Point before_rotation_normale = getNormale(before_rotation_point);
 
         return {
             .success = true,
             .inside_primitive = true,
             .direction_coeff = t2,
-            .point = non_shifted + center_position,
-            .normale = getNormale(non_shifted)};
+            .point = rotate(before_rotation_point, rotation) + center_position,
+            .normale = rotate(before_rotation_normale, rotation)};
     }
     else
     {

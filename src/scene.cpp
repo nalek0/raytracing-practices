@@ -275,13 +275,25 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
     for (PointLight light : scene.pointed_lights)
     {
         Point intersection = collision.intersection.point;
-        Point L = (light.position - intersection).normalized();
-        Point N = collision.intersection.normale.normalized();
-        Color apllied_attenuation = apply_attenuation(light, intersection);
-        float cos_angle = scalarMultiplication(L, N);
+        Point direction = light.position - intersection;
+        Ray ray = {
+            .position = intersection + direction * 1e-4,
+            .direction = direction};
 
-        if (cos_angle > 0)
-            result_intensivity += light.intensity * cos_angle;
+        RayCollision collision = first_intersection(scene, ray, 1);
+
+        if (collision.intersection.success)
+            continue; // In the shadow
+        else
+        {
+            Point L = direction.normalized();
+            Point N = collision.intersection.normale.normalized();
+            Color apllied_attenuation = apply_attenuation(light, intersection);
+            float cos_angle = scalarMultiplication(L, N);
+
+            if (cos_angle > 0)
+                result_intensivity += light.intensity * cos_angle;
+        }
     }
 
     float red = collision.primitive->color.red * result_intensivity.red;
