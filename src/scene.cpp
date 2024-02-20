@@ -270,10 +270,12 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
             .position = intersection + direction * 1e-4,
             .direction = direction};
 
-        RayCollision shadow_collision = first_intersection(scene, ray, 1);
+        RayCollision shadow_collision = first_intersection(scene, ray, 1000);
 
         if (shadow_collision.intersection.success)
+        {
             continue; // In the shadow
+        }
         else
         {
             Point N = light.direction.normalized();
@@ -305,7 +307,9 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
             float cos_angle = scalarMultiplication(L, N);
 
             if (cos_angle > 0)
+            {
                 result_intensivity += light.intensity * cos_angle;
+            }
         }
     }
 

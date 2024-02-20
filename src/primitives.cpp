@@ -83,7 +83,7 @@ Point Box::getNormale(Point point) const
     else if (fabs(fabs(point.y) - sizey) < 1e-6)
         return Point(0, point.y, 0);
     else
-        return Point(0, 0, point.x);
+        return Point(0, 0, point.z);
 }
 
 IntersectionResult Box::intersect(const Ray ray, const float coeff_limit)
