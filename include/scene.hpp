@@ -105,10 +105,12 @@ public:
     float FOV_X;
     float FOV_Y;
     int RAY_DEPTH;
-    Color AMBIENT_LIGHT;
     std::vector<PointLight> pointed_lights;
     std::vector<DirectionLight> directioned_lights;
     std::vector<Primitive *> primitives;
+
+    // Optional
+    Color AMBIENT_LIGHT = {0, 0, 0};
 
     Scene();
     void checkData();
