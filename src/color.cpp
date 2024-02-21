@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "color.hpp"
 
 Color Color::operator*(const float k) const
@@ -22,4 +24,12 @@ Color& Color::operator+=(const Color &other)
     blue += other.blue;
 
     return *this;
+}
+
+std::ostream &operator<<(std::ostream &os, const Color &col)
+{
+    return os << "Color[" 
+        << "red = " << col.red 
+        << ", green = " << col.green 
+        << ", blue = " << col.blue << "]";
 }

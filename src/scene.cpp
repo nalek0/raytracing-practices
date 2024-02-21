@@ -303,13 +303,11 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
         {
             Point L = direction.normalized();
             Point N = collision.intersection.normale.normalized();
-            Color apllied_attenuation = apply_attenuation(light, intersection);
+            Intensity apllied_attenuation = apply_attenuation(light, intersection);
             float cos_angle = scalarMultiplication(L, N);
 
             if (cos_angle > 0)
-            {
-                result_intensivity += light.intensity * cos_angle;
-            }
+                result_intensivity += apllied_attenuation * cos_angle;
         }
     }
 
