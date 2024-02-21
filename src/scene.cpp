@@ -321,7 +321,10 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
     float green = collision.primitive->color.green * result_intensivity.green;
     float blue = collision.primitive->color.blue * result_intensivity.blue;
 
-    return {std::min(red, 1.f), std::min(green, 1.f), std::min(blue, 1.f)};
+    return {
+        .red = red,
+        .green = green,
+        .blue = blue};
 }
 
 Color metallic_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth)
@@ -343,7 +346,10 @@ Color metallic_color(const Scene &scene, const Ray &ray, const RayCollision &col
     float green = collision.primitive->color.green * reflection_color.green;
     float blue = collision.primitive->color.blue * reflection_color.blue;
 
-    return {std::min(red, 1.f), std::min(green, 1.f), std::min(blue, 1.f)};
+    return {
+        .red = red,
+        .green = green,
+        .blue = blue};
 }
 
 Color dielectric_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth)
@@ -407,9 +413,9 @@ Color dielectric_color(const Scene &scene, const Ray &ray, const RayCollision &c
     Color result = reflection_color * reflection_light + refraction_color * refraction_light;
 
     return {
-        .red = std::min(result.red, 1.f),
-        .green = std::min(result.green, 1.f),
-        .blue = std::min(result.blue, 1.f)};
+        .red = result.red,
+        .green = result.green,
+        .blue = result.blue};
 }
 
 Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit, int depth)

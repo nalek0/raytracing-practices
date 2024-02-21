@@ -32,10 +32,12 @@ void generate_image(const Scene &scene, const std::string &output_file)
         {
             Ray pixel_ray = generate_ray(scene, x, y);
             Color color = ray_color(scene, pixel_ray);
+            Color with_aces = aces_tonemap(color);
+            Color corrected = gamma_correction(with_aces);
 
-            char byte1 = ((char)round(color.red * 255));
-            char byte2 = ((char)round(color.green * 255));
-            char byte3 = ((char)round(color.blue * 255));
+            char byte1 = get_red(corrected);
+            char byte2 = get_green(corrected);
+            char byte3 = get_blue(corrected);
             file.write(&byte1, sizeof(char));
             file.write(&byte2, sizeof(char));
             file.write(&byte3, sizeof(char));
