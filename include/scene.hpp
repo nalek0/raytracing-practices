@@ -32,6 +32,7 @@ public:
     Quaternion rotation;
     Color color;
     Material material = Material::DIFFUSER;
+    float IOR;
 
     virtual IntersectionResult intersect(const Ray ray, const float coeff_limit) = 0;
 };
@@ -146,4 +147,5 @@ RayCollision first_intersection(const Scene &scene, const Ray &ray, float coeff_
 Intensity apply_attenuation(const PointLight &light, const Point &point);
 Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &collision);
 Color metallic_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth);
+Color dielectric_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth);
 Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit = 1000, int depth = 0);

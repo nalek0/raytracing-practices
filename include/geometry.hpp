@@ -48,3 +48,5 @@ float scalarMultiplication(const Point &left, const Point &right);
 Point vectorMultiplication(const Point &left, const Point &right);
 Point componentDivision(const Point &left, const Point &right);
 Point rotate(const Point &p, const Quaternion &q);
+Point get_reflection(const Point &direction, const Point &normale);
+Point get_refraction(const Point &direction, const Point &normale, const float ior1, const float ior2);

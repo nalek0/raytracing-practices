@@ -192,6 +192,12 @@ void SceneBuilder::acceptCommand(const Command &command)
     {
         current_primitive->material = Material::DIELECTRIC;
     }
+    else if (command.getCommandName() == "IOR")
+    {
+        assert(is_primitive_building);
+
+        current_primitive->IOR = std::stof(command.getArgs().at(0));
+    }
     else if (command.getCommandName() == "EOF")
     {
         if (is_primitive_building)
@@ -320,22 +326,90 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
 
 Color metallic_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth)
 {
-    Point D = ray.direction.normalized();
-    Point N = collision.intersection.normale.normalized();
-    Point R = D - N * 2 * scalarMultiplication(N, D);
-    Point P = collision.intersection.point + R * 1e-4;
-    Ray new_ray = {.position = P, .direction = R};
-
     if (depth == scene.RAY_DEPTH)
         return {0, 0, 0};
 
-    Intensity reflection = ray_color(scene, new_ray, 1000, depth + 1);
+    Point point = collision.intersection.point;
+    Point direction = ray.direction;
+    Point normale = collision.intersection.normale;
+    Point reflection = get_reflection(direction, normale);
+    Ray new_ray = {
+        .position = point + reflection * 1e-4,
+        .direction = reflection};
 
-    float red = collision.primitive->color.red * reflection.red;
-    float green = collision.primitive->color.green * reflection.green;
-    float blue = collision.primitive->color.blue * reflection.blue;
+    Intensity reflection_color = ray_color(scene, new_ray, 1000, depth + 1);
+
+    float red = collision.primitive->color.red * reflection_color.red;
+    float green = collision.primitive->color.green * reflection_color.green;
+    float blue = collision.primitive->color.blue * reflection_color.blue;
 
     return {std::min(red, 1.f), std::min(green, 1.f), std::min(blue, 1.f)};
+}
+
+Color dielectric_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth)
+{
+    if (depth == scene.RAY_DEPTH)
+        return {0, 0, 0};
+
+    Point point;
+    Point direction;
+    Point normale;
+    float ior1;
+    float ior2;
+
+    if (collision.intersection.inside_primitive)
+    {
+        point = collision.intersection.point;
+        direction = ray.direction;
+        normale = -collision.intersection.normale;
+        ior1 = collision.primitive->IOR;
+        ior2 = 1;
+    }
+    else
+    {
+        point = collision.intersection.point;
+        direction = ray.direction;
+        normale = collision.intersection.normale;
+        ior1 = 1;
+        ior2 = collision.primitive->IOR;
+    }
+
+    Point D = direction.normalized();
+    Point N = normale.normalized();
+    Point L = -D;
+    float ior_div = ior1 / ior2;
+    float cos1 = scalarMultiplication(L, N);
+    float sin2 = ior_div * sqrt(1 - cos1 * cos1);
+
+    if (sin2 > 1)
+        return metallic_color(scene, ray, collision, depth);
+
+    float cos2 = sqrt(1 - sin2 * sin2);
+    Point refraction = D * ior_div + N * (ior_div * cos1 - cos2);
+    Point reflection = get_reflection(direction, normale);
+    Ray refraction_ray = {
+        .position = point + refraction * 1e-4,
+        .direction = refraction};
+    Ray reflection_ray = {
+        .position = point + reflection * 1e-4,
+        .direction = reflection};
+
+    float R0 = ((ior1 - ior2) / (ior1 + ior2));
+    R0 *= R0;
+    float powered = 1 - scalarMultiplication(L, N);
+    powered = powered * powered * powered * powered * powered;
+
+    float reflection_light = R0 + (1 - R0) * powered;
+    float refraction_light = 1 - reflection_light;
+
+    Color reflection_color = ray_color(scene, reflection_ray, 1000, depth + 1);
+    Color refraction_color = ray_color(scene, refraction_ray, 1000, depth + 1);
+    Color result = reflection_color * reflection_light + refraction_color * refraction_light;
+
+    return {
+        .red = std::min(result.red, 1.f),
+        .green = std::min(result.green, 1.f),
+        .blue = std::min(result.blue, 1.f)};
 }
 
 Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit, int depth)
@@ -348,19 +422,15 @@ Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit, int depth
         {
         case Material::METALLIC:
             return metallic_color(scene, ray, collision, depth);
-
-            break;
         case Material::DIELECTRIC:
+            return dielectric_color(scene, ray, collision, depth);
         case Material::DIFFUSER:
             return diffuser_color(scene, ray, collision);
-
-            break;
         default:
             std::cerr << "Unexpected material type " << collision.primitive->material;
 
-            break;
+            return collision.primitive->color;
         }
-        return collision.primitive->color;
     }
     else
         return scene.BACKGROUND_COLOR;

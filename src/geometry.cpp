@@ -90,3 +90,25 @@ Point rotate(const Point &p, const Quaternion &q)
 
     return second_mul.p;
 }
+
+Point get_reflection(const Point &direction, const Point &normale)
+{
+    Point D = direction.normalized();
+    Point N = normale.normalized();
+    Point R = D - N * 2 * scalarMultiplication(N, D);
+
+    return R;
+}
+
+Point get_refraction(const Point &direction, const Point &normale, const float ior1, const float ior2)
+{
+    Point D = direction.normalized();
+    Point N = normale.normalized();
+    float ior_div = ior1 / ior2;
+    float cos1 = scalarMultiplication(-D, N);
+    float sin2 = ior_div * sqrt(1 - cos1 * cos1);
+    float cos2 = sqrt(1 - sin2 * sin2);
+    Point R = D * ior_div + N * (ior_div * cos1 - cos2);
+
+    return R;
+}
