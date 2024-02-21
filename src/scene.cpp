@@ -329,7 +329,7 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
 
 Color metallic_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth)
 {
-    if (depth == scene.RAY_DEPTH)
+    if (depth > scene.RAY_DEPTH)
         return {0, 0, 0};
 
     Point point = collision.intersection.point;
@@ -342,19 +342,12 @@ Color metallic_color(const Scene &scene, const Ray &ray, const RayCollision &col
 
     Intensity reflection_color = ray_color(scene, new_ray, 1000, depth + 1);
 
-    float red = collision.primitive->color.red * reflection_color.red;
-    float green = collision.primitive->color.green * reflection_color.green;
-    float blue = collision.primitive->color.blue * reflection_color.blue;
-
-    return {
-        .red = red,
-        .green = green,
-        .blue = blue};
+    return collision.primitive->color * reflection_color;
 }
 
 Color dielectric_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth)
 {
-    if (depth == scene.RAY_DEPTH)
+    if (depth > scene.RAY_DEPTH)
         return {0, 0, 0};
 
     Point point;
@@ -412,10 +405,10 @@ Color dielectric_color(const Scene &scene, const Ray &ray, const RayCollision &c
     Color refraction_color = ray_color(scene, refraction_ray, 1000, depth + 1);
     Color result = reflection_color * reflection_light + refraction_color * refraction_light;
 
-    return {
-        .red = result.red,
-        .green = result.green,
-        .blue = result.blue};
+    if (collision.intersection.inside_primitive)
+        return reflection_color * reflection_light + refraction_color * refraction_light;
+    else
+        return reflection_color * reflection_light + refraction_color * refraction_light * collision.primitive->color;
 }
 
 Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit, int depth)
