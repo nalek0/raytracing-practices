@@ -318,6 +318,26 @@ Color diffuser_color(const Scene &scene, const Ray &ray, const RayCollision &col
     return {std::min(red, 1.f), std::min(green, 1.f), std::min(blue, 1.f)};
 }
 
+Color metallic_color(const Scene &scene, const Ray &ray, const RayCollision &collision, int depth)
+{
+    Point D = ray.direction.normalized();
+    Point N = collision.intersection.normale.normalized();
+    Point R = D - N * 2 * scalarMultiplication(N, D);
+    Point P = collision.intersection.point + R * 1e-4;
+    Ray new_ray = {.position = P, .direction = R};
+
+    if (depth == scene.RAY_DEPTH)
+        return {0, 0, 0};
+
+    Intensity reflection = ray_color(scene, new_ray, 1000, depth + 1);
+
+    float red = collision.primitive->color.red * reflection.red;
+    float green = collision.primitive->color.green * reflection.green;
+    float blue = collision.primitive->color.blue * reflection.blue;
+
+    return {std::min(red, 1.f), std::min(green, 1.f), std::min(blue, 1.f)};
+}
+
 Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit, int depth)
 {
     RayCollision collision = first_intersection(scene, ray, coeff_limit);
@@ -327,6 +347,9 @@ Color ray_color(const Scene &scene, const Ray &ray, float coeff_limit, int depth
         switch (collision.primitive->material)
         {
         case Material::METALLIC:
+            return metallic_color(scene, ray, collision, depth);
+
+            break;
         case Material::DIELECTRIC:
         case Material::DIFFUSER:
             return diffuser_color(scene, ray, collision);
