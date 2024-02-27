@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./build/practice1 "$1" "$2"
+./build/practice "$1" "$2"

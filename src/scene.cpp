@@ -381,7 +381,24 @@ Color dielectric_color(const Scene &scene, const Ray &ray, const RayCollision &c
     float sin2 = ior_div * sqrt(1 - cos1 * cos1);
 
     if (sin2 > 1)
-        return metallic_color(scene, ray, collision, depth);
+    {
+        // Metallic
+        
+        if (depth > scene.RAY_DEPTH)
+            return {0, 0, 0};
+
+        Point point = collision.intersection.point;
+        Point direction = ray.direction;
+        Point normale = collision.intersection.normale;
+        Point reflection = get_reflection(direction, normale);
+        Ray new_ray = {
+            .position = point + reflection * 1e-4,
+            .direction = reflection};
+
+        Intensity reflection_color = ray_color(scene, new_ray, 1000, depth + 1);
+
+        return reflection_color;
+    }
 
     float cos2 = sqrt(1 - sin2 * sin2);
     Point refraction = D * ior_div + N * (ior_div * cos1 - cos2);
